@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>Brewery</artifactId>
-	<version>3.1.1</version>
+	<version>3.1.2-1.20.2</version>
 	<name>Brewery</name>
 
 	<properties>
@@ -137,12 +137,10 @@
 			<id>phoenix</id>
 			<url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
 		</repository>
-		<repository>
-			<!-- Shopkeepers -->
-			<id>Lichtspiele</id>
-			<url>https://nexus.lichtspiele.org/repository/releases/</url>
-		</repository>
-
+      <repository>
+        <id>shopkeepers-repo</id>
+        <url>https://repo.projectshard.dev/repository/releases/</url>
+      </repository>
 	</repositories>
 
 	<dependencies>
@@ -296,14 +294,14 @@
 			<!-- https://www.spigotmc.org/resources/towny-advanced.72694/history -->
 			<groupId>com.github.TownyAdvanced</groupId>
 			<artifactId>Towny</artifactId>
-			<version>0.100.0.0</version>
+			<version>0.100.0.15</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<!-- https://www.spigotmc.org/resources/shopkeepers.80756/history -->
 			<groupId>com.nisovin.shopkeepers</groupId>
 			<artifactId>ShopkeepersAPI</artifactId>
-			<version>2.18.0</version>
+			<version>2.15.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

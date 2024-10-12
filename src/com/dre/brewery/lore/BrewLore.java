@@ -11,9 +11,12 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents the Lore on a Brew under Modification.
@@ -24,6 +27,7 @@ public class BrewLore {
 	private PotionMeta meta;
 	private List<String> lore;
 	private boolean lineAddedOrRem = false;
+  private final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
 	public BrewLore(Brew brew, PotionMeta meta) {
 		this.brew = brew;
@@ -223,10 +227,10 @@ public class BrewLore {
 			int index = -1;
 			for (String line : recipe.getLoreForQuality(brew.getQuality())) {
 				if (index == -1) {
-					index = addLore(Type.CUSTOM, "", line);
+					index = addLore(Type.CUSTOM, "", formatColorCodes(line));
 					index++;
 				} else {
-					lore.add(index, Type.CUSTOM.id + line);
+					lore.add(index, formatColorCodes(Type.CUSTOM.id + line));
 					index++;
 				}
 			}
@@ -351,7 +355,7 @@ public class BrewLore {
 	public int addOrReplaceLore(Type type, String prefix, String line, String suffix) {
 		int index = type.findInLore(lore);
 		if (index > -1) {
-			lore.set(index, type.id + prefix + line + suffix);
+			lore.set(index, formatColorCodes(type.id + prefix + line + suffix));
 			return index;
 		}
 
@@ -363,36 +367,90 @@ public class BrewLore {
 		return addLore(type, prefix, line, suffix);
 	}
 
-	/**
-	 * Adds a line of Lore in the correct ordering
-	 *
-	 * @param type The Type of BrewLore to add
-	 * @param prefix The Prefix to add to the line of lore
-	 * @param line The Line of Lore to add or add
-	 */
-	public int addLore(Type type, String prefix, String line) {
-		return addLore(type, prefix, line, "");
-	}
-	/**
-	 * Adds a line of Lore in the correct ordering
-	 *
-	 * @param type The Type of BrewLore to add
-	 * @param prefix The Prefix to add to the line of lore
-	 * @param line The Line of Lore to add or add
-	 * @param suffix The Suffix to add to the line of lore
-	 */
-	public int addLore(Type type, String prefix, String line, String suffix) {
-		lineAddedOrRem = true;
-		for (int i = 0; i < lore.size(); i++) {
-			Type existing = Type.get(lore.get(i));
-			if (existing != null && existing.isAfter(type)) {
-				lore.add(i, type.id + prefix + line + suffix);
-				return i;
-			}
-		}
-		lore.add(type.id + prefix + line + suffix);
-		return lore.size() - 1;
-	}
+	    /**
+     * Adds a line of Lore in the correct ordering.
+     *
+     * @param type   The Type of BrewLore to add.
+     * @param prefix The Prefix to add to the line of lore.
+     * @param line   The Line of Lore to add.
+     * @return The index of the added lore line.
+     */
+    public int addLore(Type type, String prefix, String line) {
+      return addLore(type, prefix, line, "");
+  }
+
+  /**
+   * Adds a line of Lore in the correct ordering with support for custom color codes.
+   *
+   * @param type   The Type of BrewLore to add.
+   * @param prefix The Prefix to add to the line of lore.
+   * @param line   The Line of Lore to add.
+   * @param suffix The Suffix to add to the line of lore.
+   * @return The index of the added lore line.
+   */
+  public int addLore(Type type, String prefix, String line, String suffix) {
+      lineAddedOrRem = true;
+
+      // Process the prefix, line, and suffix to replace color codes
+      String formattedPrefix = formatColorCodes(prefix);
+      String formattedLine = formatColorCodes(line);
+      String formattedSuffix = formatColorCodes(suffix);
+
+      for (int i = 0; i < lore.size(); i++) {
+          Type existing = Type.get(lore.get(i));
+          if (existing != null && existing.isAfter(type)) {
+              lore.add(i, type.id + formattedPrefix + formattedLine + formattedSuffix);
+              return i;
+          }
+      }
+
+      lore.add(type.id + formattedPrefix + formattedLine + formattedSuffix);
+      return lore.size() - 1;
+  }
+
+  /**
+   * Replaces custom color codes in the provided string with corresponding ChatColor codes.
+   *
+   * @param text The text to format with color codes.
+   * @return The formatted text with ChatColor codes.
+   */
+
+public static String formatColorCodes(String text) {
+  if (text == null) {
+      return null;
+  }
+
+  // Define regex patterns for matching hex color codes and '&' codes
+  String hexPattern = "(?<hash>#)([A-Fa-f0-9]{6})";
+  Pattern pattern = Pattern.compile(hexPattern);
+  Matcher match = pattern.matcher(text);
+
+  // Use StringBuilder for efficient string manipulation
+  StringBuilder formattedText = new StringBuilder();
+
+  int lastEnd = 0; // To keep track of where we last ended in the original string
+
+  while (match.find()) {
+      // Append the text before the match
+      formattedText.append(text, lastEnd, match.start());
+
+      // Construct the full hex color code
+      String hexCode = match.group(0); // this gives us #RRGGBB
+      // Append the ChatColor for the hex color
+      formattedText.append(ChatColor.of(hexCode));
+
+      lastEnd = match.end(); // Update last end to the end of the current match
+  }
+
+  // Append any remaining text after the last match
+  formattedText.append(text.substring(lastEnd));
+
+  // Replace '&' with '§' for Minecraft color codes
+  String result = ChatColor.translateAlternateColorCodes('&', formattedText.toString());
+
+  return result;
+}
+
 
 	/**
 	 * Searches for type and if not found for Substring lore and removes it
