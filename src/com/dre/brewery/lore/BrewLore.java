@@ -27,7 +27,6 @@ public class BrewLore {
 	private PotionMeta meta;
 	private List<String> lore;
 	private boolean lineAddedOrRem = false;
-  private final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
 	public BrewLore(Brew brew, PotionMeta meta) {
 		this.brew = brew;
