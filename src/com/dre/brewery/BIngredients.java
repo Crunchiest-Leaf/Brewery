@@ -1,5 +1,18 @@
 package com.dre.brewery;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.jetbrains.annotations.Nullable;
+
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.lore.Base91EncoderStream;
 import com.dre.brewery.lore.BrewLore;
@@ -7,20 +20,8 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
-import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.recipe.PotionColor;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.dre.brewery.recipe.RecipeItem;
 
 /**
  * Represents ingredients in Cauldron, Brew
@@ -142,8 +143,8 @@ public class BIngredients {
 			} else {
 				BCauldronRecipe cauldronRecipe = getCauldronRecipe();
 				if (cauldronRecipe != null) {
-					P.p.debugLog("Found Cauldron Recipe: " + cauldronRecipe.getName());
-					cookedName = cauldronRecipe.getName();
+					P.p.debugLog("Found Cauldron Recipe: " + BrewLore.formatColorCodes(cauldronRecipe.getName()));
+					cookedName = BrewLore.formatColorCodes(cauldronRecipe.getName());
 					if (cauldronRecipe.getLore() != null) {
 						BrewLore lore = new BrewLore(brew, potionMeta);
 						lore.addCauldronLore(cauldronRecipe.getLore());
@@ -162,7 +163,7 @@ public class BIngredients {
 			PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 		}
 
-		potionMeta.setDisplayName(P.p.color("&f" + cookedName));
+		potionMeta.setDisplayName(P.p.color("&f" + cookedName)); // DO NOT CHANGE THE &f PREFIX!!! IT WILL BREAK!!!
 		//if (!P.use1_14) {
 			// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
 			// This is due to the Duration Modifier, that is removed in 1.14

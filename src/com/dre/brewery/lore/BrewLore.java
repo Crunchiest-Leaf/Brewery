@@ -1,22 +1,24 @@
 package com.dre.brewery.lore;
 
-import com.dre.brewery.recipe.BEffect;
-import com.dre.brewery.BIngredients;
-import com.dre.brewery.recipe.BRecipe;
-import com.dre.brewery.Brew;
-import com.dre.brewery.P;
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.utility.BUtil;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.jetbrains.annotations.Nullable;
-import net.md_5.bungee.api.ChatColor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
+
+import com.dre.brewery.BIngredients;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
+import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.recipe.BEffect;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.utility.BUtil;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Represents the Lore on a Brew under Modification.
@@ -99,10 +101,10 @@ public class BrewLore {
 		int index = -1;
 		for (String line : l) {
 			if (index == -1) {
-				index = addLore(Type.CUSTOM, "", line);
+				index = addLore(Type.CUSTOM, "", formatColorCodes(line)); // DO NOT CHANGE THE Type.CUSTOM PREFIX ENUM!!! IT WILL BREAK!!!
 				index++;
 			} else {
-				lore.add(index, Type.CUSTOM.id + line);
+				lore.add(index, formatColorCodes(Type.CUSTOM.id + line)); // DO NOT CHANGE THE Type.CUSTOM PREFIX ENUM!!! IT WILL BREAK!!!
 				index++;
 			}
 		}
